@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { analyzeQuery, checkHealth } from '../api/analyst'
+import { analyzeQuery, checkHealth, isApiConfigured } from '../api/analyst'
 
 const ChatContext = createContext(null)
 
@@ -18,6 +18,10 @@ export function ChatProvider({ children }) {
   const pendingQueryRef = useRef('')
 
   useEffect(() => {
+    if (!isApiConfigured()) {
+      setApiOnline(false)
+      return
+    }
     checkHealth()
       .then(() => setApiOnline(true))
       .catch(() => setApiOnline(false))

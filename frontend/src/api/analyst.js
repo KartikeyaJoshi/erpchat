@@ -1,4 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
+export function getApiBaseUrl() {
+  return API_BASE
+}
+
+export function isApiConfigured() {
+  return Boolean(API_BASE) || !import.meta.env.PROD
+}
 
 /**
  * @param {string} query

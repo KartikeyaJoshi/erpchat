@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+import { getApiBaseUrl } from './analyst'
+
+const API_BASE = getApiBaseUrl()
 
 /**
  * @param {{ refresh?: boolean }} [options]

@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { isApiConfigured, getApiBaseUrl } from '../api/analyst'
 import ThemeToggle from './ThemeToggle'
 import './Header.css'
 
@@ -10,6 +11,13 @@ export default function Header({
 }) {
   const location = useLocation()
   const page = activePage ?? (location.pathname.startsWith('/schema') ? 'schema' : 'chat')
+  const apiConfigured = isApiConfigured()
+  const apiStatusTitle =
+    apiOnline === true
+      ? `API connected (${getApiBaseUrl()})`
+      : !apiConfigured
+        ? 'API URL missing — set VITE_API_BASE_URL on Vercel and redeploy'
+        : 'API offline — check Render service and FRONTEND_URL CORS setting'
 
   return (
     <header className="header">
@@ -51,7 +59,7 @@ export default function Header({
         {apiOnline !== undefined && (
           <span
             className={`status-pill ${apiOnline === true ? 'online' : apiOnline === false ? 'offline' : 'unknown'}`}
-            title={apiOnline === true ? 'API connected' : apiOnline === false ? 'API offline' : 'Checking…'}
+            title={apiStatusTitle}
           >
             <span className="status-dot" />
             {apiOnline === true ? 'Connected' : apiOnline === false ? 'Offline' : 'Checking…'}

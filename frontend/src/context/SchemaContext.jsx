@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { isApiConfigured } from '../api/analyst'
 import { fetchSchema } from '../api/schema'
 import {
   clearSchemaCache,
@@ -38,6 +39,13 @@ export function SchemaProvider({ children }) {
   }, [])
 
   const load = useCallback(async (refresh = false) => {
+    if (!isApiConfigured()) {
+      setError('API URL not configured. Set VITE_API_BASE_URL on Vercel and redeploy.')
+      setLoading(false)
+      setRefreshing(false)
+      return
+    }
+
     if (refresh) {
       setRefreshing(true)
     } else {
