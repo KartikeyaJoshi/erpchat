@@ -1,0 +1,5 @@
+1. Use Fuzzy matching to make the queries robust.
+2. Use pg_trgm to rank by similarity in Fuzzy Matching.
+3. Add Disambiguation (Pause in the pipeline)
+
+

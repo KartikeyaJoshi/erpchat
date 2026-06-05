@@ -1,0 +1,7 @@
+Python
+LangGraph
+SQLGlot (Python Library)
+FastAPI
+Groq API
+Pinecone
+OpenAI Embeddings

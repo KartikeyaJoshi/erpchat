@@ -1,0 +1,166 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.header-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: white;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.header-logo svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.header-prototype-pill {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--warning) 28%, transparent);
+}
+
+.header-subtitle {
+  margin: 0.125rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+}
+
+.header-nav-link {
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.header-nav-link:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.header-nav-link.active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  color: var(--text-muted);
+}
+
+.status-pill.online {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+  background: color-mix(in srgb, var(--success) 8%, var(--surface-elevated));
+}
+
+.status-pill.offline {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface-elevated));
+}
+
+.status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-ghost:hover {
+  background: var(--surface-elevated);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+@media (max-width: 640px) {
+  .header-subtitle {
+    display: none;
+  }
+}

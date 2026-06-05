@@ -1,0 +1,29 @@
+# Render Blueprint — ERP Analyst API (backend)
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: erp-analyst-api
+    runtime: python
+    rootDir: v2
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: FRONTEND_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: erp-analyst

@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0.0",
+  "database": "public",
+  "tables": {
+    "customers": {
+      "columns": [
+        "customer_id",
+        "company_name",
+        "contact_name",
+        "email",
+        "phone",
+        "credit_limit",
+        "outstanding_balance",
+        "city",
+        "state",
+        "country",
+        "is_active",
+        "created_at"
+      ],
+      "primary_key": "customer_id",
+      "entity": {
+        "noun": "customer",
+        "label_columns": ["company_name", "contact_name", "city"],
+        "lookup_columns": ["company_name", "contact_name", "email"],
+        "measure_columns": ["credit_limit", "outstanding_balance"]
+      }
+    },
+    "products": {
+      "columns": [
+        "product_id",
+        "sku",
+        "product_name",
+        "category",
+        "cost_price",
+        "unit_price",
+        "tax_rate",
+        "is_discontinued"
+      ],
+      "primary_key": "product_id",
+      "entity": {
+        "noun": "product",
+        "label_columns": ["product_name", "category"],
+        "lookup_columns": ["sku", "product_name"],
+        "measure_columns": ["cost_price", "unit_price"]
+      }
+    },
+    "inventory": {
+      "columns": [
+        "inventory_id",
+        "product_id",
+        "warehouse_name",
+        "stock_on_hand",
+        "reorder_level",
+        "allocated_stock"
+      ],
+      "primary_key": "inventory_id",
+      "foreign_keys": {"product_id": "products.product_id"},
+      "entity": {
+        "noun": "warehouse location",
+        "label_columns": ["warehouse_name"],
+        "lookup_columns": ["warehouse_name"],
+        "measure_columns": ["stock_on_hand", "allocated_stock", "reorder_level"]
+      }
+    },
+    "stock_movements": {
+      "columns": [
+        "movement_id",
+        "product_id",
+        "warehouse_name",
+        "movement_type",
+        "quantity",
+        "reference_id",
+        "movement_timestamp"
+      ],
+      "primary_key": "movement_id",
+      "foreign_keys": {"product_id": "products.product_id"},
+      "entity": {
+        "noun": "stock movement",
+        "label_columns": ["warehouse_name", "movement_type"],
+        "lookup_columns": ["warehouse_name", "movement_type"],
+        "measure_columns": ["quantity"]
+      }
+    },
+    "sales_orders": {
+      "columns": [
+        "order_id",
+        "customer_id",
+        "order_date",
+        "status",
+        "subtotal",
+        "tax_amount",
+        "total_amount",
+        "payment_terms",
+        "sales_rep_id"
+      ],
+      "primary_key": "order_id",
+      "enums": {
+        "status": ["Draft", "Pending", "Invoiced", "Paid", "Shipped", "Cancelled"]
+      },
+      "entity": {
+        "noun": "order",
+        "label_columns": ["order_date", "status"],
+        "lookup_columns": ["order_id"],
+        "measure_columns": ["subtotal", "tax_amount", "total_amount"]
+      }
+    },
+    "order_items": {
+      "columns": [
+        "item_id",
+        "order_id",
+        "product_id",
+        "quantity",
+        "unit_price",
+        "discount_percent",
+        "line_total"
+      ],
+      "primary_key": "item_id",
+      "foreign_keys": {
+        "order_id": "sales_orders.order_id",
+        "product_id": "products.product_id"
+      }
+    },
+    "employees": {
+      "columns": [
+        "employee_id",
+        "first_name",
+        "last_name",
+        "email",
+        "hire_date",
+        "dept_id",
+        "job_title",
+        "salary",
+        "is_active"
+      ],
+      "primary_key": "employee_id",
+      "foreign_keys": {"dept_id": "departments.dept_id"},
+      "entity": {
+        "noun": "employee",
+        "label_columns": ["first_name", "last_name", "job_title"],
+        "lookup_columns": ["first_name", "last_name", "email"],
+        "measure_columns": ["salary"]
+      }
+    },
+    "departments": {
+      "columns": [
+        "dept_id",
+        "dept_name",
+        "manager_id"
+      ],
+      "primary_key": "dept_id",
+      "foreign_keys": {"manager_id": "employees.employee_id"},
+      "entity": {
+        "noun": "department",
+        "label_columns": ["dept_name"],
+        "lookup_columns": ["dept_name"],
+        "measure_columns": []
+      }
+    },
+    "accounts_chart": {
+      "columns": [
+        "account_code",
+        "account_name",
+        "account_type",
+        "currency"
+      ],
+      "primary_key": "account_code",
+      "entity": {
+        "noun": "account",
+        "label_columns": ["account_name", "account_type"],
+        "lookup_columns": ["account_code", "account_name"],
+        "measure_columns": []
+      }
+    },
+    "general_ledger": {
+      "columns": [
+        "entry_id",
+        "account_code",
+        "entry_date",
+        "debit",
+        "credit",
+        "reference_order_id",
+        "description"
+      ],
+      "primary_key": "entry_id",
+      "foreign_keys": {
+        "account_code": "accounts_chart.account_code",
+        "reference_order_id": "sales_orders.order_id"
+      }
+    },
+    "payslips": {
+      "columns": [
+        "payslip_id",
+        "employee_id",
+        "period_start",
+        "period_end",
+        "gross_salary",
+        "deductions",
+        "net_salary",
+        "payout_timestamp"
+      ],
+      "primary_key": "payslip_id",
+      "foreign_keys": {"employee_id": "employees.employee_id"},
+      "entity": {
+        "noun": "payslip",
+        "label_columns": ["period_start", "period_end"],
+        "lookup_columns": ["payslip_id"],
+        "measure_columns": ["gross_salary", "net_salary", "deductions"]
+      }
+    },
+    "audit_logs": {
+      "columns": [
+        "audit_log_id",
+        "user_id",
+        "action",
+        "table_name",
+        "row_id",
+        "previous_state",
+        "new_state",
+        "created_at"
+      ],
+      "primary_key": "audit_log_id"
+    }
+  },
+  "metric_definitions": {
+    "lakh": 100000,
+    "5_lakhs": 500000,
+    "fast_moving": "Top products by SUM(order_items.quantity) joined to sales_orders in the requested year; exclude Draft and Cancelled orders.",
+    "low_stock": "Per warehouse: (stock_on_hand - allocated_stock) <= reorder_level in inventory.",
+    "revenue": "SUM(sales_orders.total_amount) unless user asks for pre-tax subtotal."
+  },
+  "join_paths": [
+    ["sales_orders", "customers", "customer_id"],
+    ["sales_orders", "employees", "sales_rep_id"],
+    ["sales_orders", "order_items", "order_id"],
+    ["order_items", "products", "product_id"],
+    ["inventory", "products", "product_id"],
+    ["stock_movements", "products", "product_id"],
+    ["employees", "departments", "dept_id"],
+    ["departments", "employees", "manager_id"],
+    ["payslips", "employees", "employee_id"],
+    ["general_ledger", "accounts_chart", "account_code"],
+    ["general_ledger", "sales_orders", "reference_order_id"]
+  ]
+}

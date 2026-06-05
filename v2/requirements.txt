@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+langchain
+langchain-groq
+langgraph
+supabase
+pandas
+pydantic
+python-dotenv
+sqlglot
+openai>=1.0.0
+pinecone>=5.0.0
+pypdf>=4.0.0
+fpdf2>=2.7.0
+pytest
