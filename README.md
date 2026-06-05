@@ -2,43 +2,90 @@
 
 **Ask business questions in plain English. Get answers from your ERP data.**
 
-ERPChat is an interactive prototype that lets you explore a live database schema and chat with an AI analyst about revenue, inventory, payroll, customers, and more — without writing SQL.
+ERPChat is an interactive demo that shows how an AI assistant can work on top of enterprise resource planning (ERP) data. You can browse the database structure, ask questions in everyday language, and receive answers — without writing SQL yourself.
 
 ---
 
-## What does it do?
+## The problem it solves
 
-| Feature | In simple terms |
-|--------|------------------|
-| **Landing page** | Introduces the project and links to the demo |
-| **Schema browser** | Shows live tables, columns, relationships, and sample rows |
-| **Chat** | Ask questions like *"What is total revenue in 2026?"* and get answers |
-| **Smart follow-ups** | When several records match, the AI asks you to pick the right one |
+ERP systems hold valuable data across sales, inventory, finance, and HR — but getting answers usually means knowing table names, writing queries, or waiting on a report. ERPChat explores a simpler path: **you ask a question, the system figures out the rest.**
 
-> **Note:** This is a prototype for demonstration — not a full production product. AI can make mistakes; verify important numbers against source data.
+This is a **prototype**, not a finished product. It is meant to demonstrate the idea, gather feedback, and show how natural language can connect to structured business data.
+
+---
+
+## What can you do?
+
+### Landing page (`/`)
+A marketing-style intro with an overview of features, how the demo works, and a **Try Now** button to open the chat.
+
+### Schema browser (`/schema`)
+Explore the live database structure:
+- Tables grouped and searchable
+- Column names, types, primary keys, and foreign keys
+- Relationship map between tables
+- Sample rows from each table
+
+Schema data is cached in the browser until you refresh or clear site data.
+
+### Chat (`/chat`)
+Ask business questions in plain language, for example:
+- *What is total revenue in 2026?*
+- *What is stock at Mumbai Warehouse?*
+- *What is the salary for Diya Sharma?*
+
+When the AI finds multiple matching records, it asks you to pick the right one instead of guessing.
+
+> **AI can make mistakes** — always verify important figures against the source data.
+
+---
+
+## How it works (behind the scenes)
+
+When you send a question, the backend runs a multi-step pipeline:
+
+```
+Your question
+    ↓
+Planner — understands intent and picks the right tables
+    ↓
+SQL generator — writes a database query
+    ↓
+SQL validator — checks syntax, schema, and safety rules
+    ↓
+Database — runs the query against live ERP data
+    ↓
+Insight — returns a clear answer in plain language
+```
+
+**RAG (retrieval-augmented generation)** pulls relevant context from schema and business-rule documents so the AI stays aligned with your data model.
+
+**Disambiguation** kicks in when a name or term could match more than one record — you choose, and the pipeline continues with your selection.
 
 ---
 
 ## Tech stack
 
 ### Frontend (`frontend/`)
-| Technology | Purpose |
-|------------|---------|
-| **React 19** | UI framework |
-| **Vite** | Fast dev server & build tool |
-| **React Router** | Pages: `/`, `/chat`, `/schema` |
-| **Framer Motion** | Smooth animations on landing & chat |
-| **Plain CSS** | Light/dark theme with CSS variables |
+
+| Technology | Role |
+|------------|------|
+| **React 19** | User interface |
+| **Vite** | Development and build tooling |
+| **React Router** | Navigation between pages |
+| **Framer Motion** | Animations on landing and chat |
+| **Plain CSS** | Styling with light/dark theme support |
 
 ### Backend (`v2/`)
-| Technology | Purpose |
-|------------|---------|
-| **FastAPI** | REST API |
-| **LangGraph** | Multi-step AI pipeline (plan → SQL → answer) |
-| **Groq (LLM)** | Natural language understanding & SQL generation |
-| **PostgreSQL via Supabase** | Live ERP data storage |
-| **SQLGlot** | SQL validation before execution |
-| **Pinecone + OpenAI** | RAG over schema & business rules PDFs |
+
+| Technology | Role |
+|------------|------|
+| **FastAPI** | REST API server |
+| **LangGraph** | Orchestrates the AI pipeline as a graph of steps |
+| **Groq (LLM)** | Powers planning, SQL generation, and answers |
+| **PostgreSQL** | ERP data storage |
+| **SQLGlot** | Validates SQL before it hits the database |
+| **Pinecone + OpenAI** | Vector search over knowledge documents (RAG) |
 
 ---
 
@@ -46,28 +93,33 @@ ERPChat is an interactive prototype that lets you explore a live database schema
 
 ```
 ERP Analyst Agent/
-├── frontend/          # React app (Vercel)
+├── frontend/              # React web app
 │   └── src/
-│       ├── pages/     # Landing, Chat, Schema
-│       ├── components/
-│       └── context/   # Chat, Schema, Theme state
-├── v2/                # FastAPI API (Render)
+│       ├── pages/         # Landing, Chat, Schema
+│       ├── components/    # UI building blocks
+│       ├── context/       # Shared state (chat, schema, theme)
+│       ├── api/           # Calls to the backend
+│       └── hooks/         # Reusable logic
+├── v2/                    # Python API
 │   └── app/
-│       ├── main.py    # API routes
-│       ├── graph.py   # LangGraph pipeline
-│       └── schema/    # Live DB explorer
-├── render.yaml        # Render deployment blueprint
+│       ├── main.py        # API routes
+│       ├── graph.py       # LangGraph pipeline
+│       ├── nodes.py       # Pipeline steps
+│       ├── schema/        # Live schema explorer
+│       ├── validator/     # SQL safety checks
+│       └── rag/           # Knowledge retrieval
+├── DOCS/                  # Product docs
 └── README.md
 
-# Not uploaded to GitHub (see .gitignore):
-# v1/  — old prototype, kept locally only
+# Kept locally only (not in git):
+# v1/  — earlier prototype version
 ```
 
 ---
 
 ## Run locally
 
-### 1. Backend
+### Backend
 
 ```powershell
 cd v2
@@ -75,11 +127,11 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env
-# Fill in API keys in .env (see v2/.env.example)
+# Add your API keys to .env
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 ```
 
-### 2. Frontend
+### Frontend
 
 ```powershell
 cd frontend
@@ -89,136 +141,30 @@ npm run dev
 
 Open **http://localhost:5173**
 
-The dev server proxies `/api` and `/health` to the backend automatically.
+In development, the frontend automatically forwards `/api` and `/health` requests to the backend on port `8001`.
 
 ---
 
-## Deploy: Backend on Render
-
-### Step 1 — Push code to GitHub
-
-```powershell
-cd "D:\DEV\ERP Analyst Agent"
-git init
-git add .
-git commit -m "Initial commit: ERPChat prototype"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/erp-analyst-agent.git
-git push -u origin main
-```
-
-### Step 2 — Create a Render Web Service
-
-1. Go to [render.com](https://render.com) → **New** → **Web Service**
-2. Connect your GitHub repo
-3. Configure:
-
-| Setting | Value |
-|---------|-------|
-| **Name** | `erp-analyst-api` |
-| **Root Directory** | `v2` |
-| **Runtime** | Python 3 |
-| **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
-| **Health Check Path** | `/health` |
-
-> **Tip:** You can also use the included `render.yaml` blueprint: **New** → **Blueprint** → point at your repo.
-
-### Step 3 — Add environment variables on Render
-
-Copy from `v2/.env.example`. **Required minimum:**
-
-| Variable | Description |
-|----------|-------------|
-| `GROQ_API_KEY` | LLM for planning & SQL |
-| `SUPABASE_URL` | Database URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Database access |
-| `OPENAI_API_KEY` | Embeddings for RAG |
-| `PINECONE_API_KEY` | Vector search |
-| `PINECONE_INDEX_NAME` | Your Pinecone index |
-| `FRONTEND_URL` | Your Vercel URL (add after Step 4) |
-
-### Step 4 — Note your API URL
-
-After deploy, Render gives you a URL like:
-
-`https://erp-analyst-api.onrender.com`
-
-Test it: `https://erp-analyst-api.onrender.com/health` → should return `{"status":"ok",...}`
-
----
-
-## Deploy: Frontend on Vercel
-
-### Step 1 — Import project
-
-1. Go to [vercel.com](https://vercel.com) → **Add New** → **Project**
-2. Import the same GitHub repo
-3. Configure:
-
-| Setting | Value |
-|---------|-------|
-| **Framework Preset** | Vite |
-| **Root Directory** | `frontend` |
-| **Build Command** | `npm run build` |
-| **Output Directory** | `dist` |
-
-### Step 2 — Environment variable
-
-| Variable | Value |
-|----------|-------|
-| `VITE_API_BASE_URL` | `https://erp-analyst-api.onrender.com` (your Render URL, **no trailing slash**) |
-
-### Step 3 — Deploy
-
-Click **Deploy**. Vercel will build and host your app at e.g. `https://erpchat.vercel.app`.
-
-`frontend/vercel.json` is included so React Router paths (`/chat`, `/schema`) work correctly.
-
-### Step 4 — Connect frontend ↔ backend
-
-Go back to **Render** → your API service → **Environment** → set:
-
-```
-FRONTEND_URL=https://your-app.vercel.app
-```
-
-Save and redeploy the API so CORS allows your Vercel domain.
-
----
-
-## Deployment checklist
-
-- [ ] GitHub repo created and code pushed
-- [ ] Render API deployed, `/health` returns OK
-- [ ] All backend env vars set on Render
-- [ ] Vercel frontend deployed with `VITE_API_BASE_URL`
-- [ ] `FRONTEND_URL` set on Render to Vercel URL
-- [ ] Chat page shows **Connected** status pill
-- [ ] Schema page loads tables
-
----
-
-## API endpoints
+## API overview
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/health` | Health check |
+| `GET` | `/health` | Check if the API is running |
 | `POST` | `/api/v1/analyze` | Send a business question |
-| `GET` | `/api/v1/schema` | Live database schema |
-| `GET` | `/api/v1/schema/tables/{name}/preview` | Sample rows for a table |
-| `GET` | `/api/v1/metrics` | Pipeline metrics |
+| `GET` | `/api/v1/schema` | Fetch live database schema |
+| `GET` | `/api/v1/schema/tables/{name}/preview` | Sample rows for one table |
+| `GET` | `/api/v1/metrics` | Pipeline usage metrics |
 
 ---
 
-## Free tier notes
+## Who is this for?
 
-- **Render free** services spin down after inactivity — first request may take 30–60 seconds to wake up.
-- **Vercel** hobby tier is fine for this static React build.
-- Never commit `.env` files — use platform environment variable UIs instead.
+- **Product & business teams** — see what natural-language ERP access could look like
+- **Developers** — study the LangGraph pipeline, SQL validation, and RAG setup
+- **Stakeholders** — try the demo without installing a full ERP reporting tool
 
 ---
 
 ## License
 
-Prototype / demonstration project. Use and modify as needed for your team.
+Prototype / demonstration project. Use and adapt as needed for your team.
